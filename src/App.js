@@ -1,24 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import axios from 'axios';
+import UserList from './components/usersList';
+import Login from './components/login/Login';
+import { BrowserRouter as Router, Route,Routes } from 'react-router-dom';
+
 
 function App() {
+  const [file, setFile] = useState(null);
+  const [users, setUsers] = useState([]);
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  const handleUpload = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await axios.post('http://localhost:3000/api/v1/users/many', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      console.log(response.data.message);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <div>
+    <Router>
+        <Routes>
+        <Route path="/" element={<Login/>} />
+        <Route path="/users" element={<UserList/>}/>
+        </Routes>
+    </Router>
+     </div>
   );
 }
 
