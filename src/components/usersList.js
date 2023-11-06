@@ -1,16 +1,24 @@
 import React, { useState,useEffect } from 'react';
 import axios from 'axios'
-import { Container, Typography, Button, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Paper } from '@mui/material';
+import './styles/userlist.css'
+import { Button } from '@mui/material';
 
 const UserList = () => {
-    const [users, setUsers] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [page, setPage] = useState(1); // Current page
-    const [rowsPerPage] = useState(10); // Number of rows per page
+
+  const [users, setUsers] = useState([]);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState('Active');
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(4); 
 
   useEffect(() => {
     // Fetch the users from the API
-    axios.get('http://localhost:3000/api/v1/users')
+    axios.get('http://localhost:4500/api/v1/users')
       .then((response) => {
         setUsers(response.data.users);
         setLoading(false);
@@ -21,71 +29,136 @@ const UserList = () => {
       });
   }, []);
 
-  // Form state
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [dob, setDob] = useState('');
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentUsers = users.slice(indexOfFirstItem, indexOfLastItem);
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission (e.g., POST request to add a new user)
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const addUser = () => {
+    // Add the new user to the users list
+    const newUser = {
+      firstname: firstName,
+      lastname: lastName,
+      email,
+      birth_date: birthDate,
+      status,
+    };
+    setUsers([...users, newUser]);
+    setShowAddUserModal(false);
+    // Clear the input fields after adding the user
+    setFirstName('');
+    setLastName('');
+    setEmail('');
+    setBirthDate('');
+    setStatus('Active');
   };
 
-  const handleFileUpload = (e) => {
-    // Add file upload logic here
+  const uploadFile = (e) => {
+    // Logic to handle file upload
+    const file = e.target.files[0];
   };
+
+  const handleSearch=()=>{
+    console.log('search')
+  }
+
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        User Management
-      </Typography>
+    <div className="App">
+      <h1>User Management</h1>
 
-      {/* User Form */}
-      <form onSubmit={handleFormSubmit}>
-        {/* Add form fields here */}
-        <Button type="submit" variant="contained" color="primary">
-          Add User
-        </Button>
-      </form>
-
-      {/* File Upload */}
-      <input type="file" accept=".xlsx" onChange={handleFileUpload} />
-      <Button variant="contained" color="secondary">
-        Upload File
-      </Button>
-
-      {/* User Table */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>First Name</TableCell>
-              <TableCell>Last Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Date of Birth</TableCell>
-              <TableCell>Active</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {/* Map through users and display data */}
-            {users.slice((page - 1) * rowsPerPage, page * rowsPerPage).map((user, index) => (
-              <TableRow key={index}>
-                <TableCell>{user.firstname}</TableCell>
-                <TableCell>{user.lastname}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.birth_day}</TableCell>
-                <TableCell>{user.is_active}</TableCell>
-              </TableRow>
+      <button className="add-user-btn" onClick={() => setShowAddUserModal(true)}>
+        Add User
+      </button>
+      <div className="file-upload-container">
+       <input type="file" accept=".xlsx" onChange={uploadFile} className="file-input"  />
+       <div className="search-and-filter">
+    <input type="text" placeholder="Search" className="search-input" />
+    <input type="date" className="date-filter" />
+    <input type="date" className="date-filter" />
+    <button onClick={handleSearch} className="search-button">
+      Search
+    </button>
+  </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Date of Birth</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        {currentUsers.map((user, index) => (
+          <tr key={index}>
+            <td>{user.firstname}</td>
+            <td>{user.lastname}</td>
+            <td>{user.email}</td>
+            <td>{user.birth_day}</td>
+            <td>{user.is_active}</td>
+            <td>
+              <Button style={{color:'green',fontStyle:'bold',fontSize:'15px'}}>Edit</Button>
+              <Button style={{color:'red',fontStyle:'bold',fontSize:'15px'}}>Delete</Button>
+            </td>
+          </tr>
+        ))}
+        </tbody>
+      </table>
+      {showAddUserModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close" onClick={() => setShowAddUserModal(false)}>
+              &times;
+            </span>
+            <h2>Add User</h2>
+            <input
+              type="text"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="date"
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+            />
+            <select value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+            <button onClick={addUser} className='submit'>Submit</button>
+          </div>
+        </div>
+      )}
+      <div className="pagination">
+        {users.length > itemsPerPage &&
+          Array(Math.ceil(users.length / itemsPerPage))
+            .fill(null)
+            .map((_, index) => (
+              <button key={index + 1} onClick={() => paginate(index + 1)}>
+                {index + 1}
+              </button>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      </div>
+      </div>
+  )
 
-      {/* Pagination */}
-      <Button onClick={() => setPage(page - 1)} disabled={page === 1}>Previous</Button>
-      <Button onClick={() => setPage(page + 1)} disabled={page * rowsPerPage >= users.length}>Next</Button>
-    </Container>
-  );
 };
 
 export default UserList;
