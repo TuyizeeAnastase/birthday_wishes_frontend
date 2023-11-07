@@ -2,33 +2,50 @@ import React, { useState,useEffect } from 'react';
 import axios from 'axios'
 import './styles/userlist.css'
 import SignUp from './AddUserForm'
+import Messages from './MessagesModels';
 import { Button } from '@mui/material';
 
 const UserList = () => {
-
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [birthDate, setBirthDate] = useState('');
-  const [status, setStatus] = useState('Active');
   const [users, setUsers] = useState([]);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true);
   const [itemsPerPage] = useState(10); 
+  const [success,setSucees]=useState('')
+  const [file, setFile] = useState(null);
+  const [managepopup,setManagepopup]=useState(false)
+
+
+  const uploadFile =async (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    try {
+      const response = await fetch('http://localhost:4500/api/v1/users/many', {
+        method: 'POST',
+        body: formData,
+      });
+      if (response.ok) {
+        console.log('Users created successfully.');
+      } else {
+        console.error('Failed to create users.');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   useEffect(() => {
     // Fetch the users from the API
     axios.get('http://localhost:4500/api/v1/users')
       .then((response) => {
         setUsers(response.data.users);
-        setLoading(false);
       })
       .catch((error) => {
         console.error('Error fetching users:', error);
-        setLoading(false);
       });
-  }, []);
+
+  }, [file]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -36,33 +53,12 @@ const UserList = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const addUser = () => {
-    // Add the new user to the users list
-    const newUser = {
-      firstname: firstName,
-      lastname: lastName,
-      email,
-      birth_date: birthDate,
-      status,
-    };
-    setUsers([...users, newUser]);
-    setShowAddUserModal(false);
-    // Clear the input fields after adding the user
-    setFirstName('');
-    setLastName('');
-    setEmail('');
-    setBirthDate('');
-    setStatus('Active');
-  };
-
-  const uploadFile = (e) => {
-    // Logic to handle file upload
-    const file = e.target.files[0];
-  };
 
   const handleSearch=()=>{
     console.log('search')
   }
+
+  console.log(managepopup)
 
   return (
     <div className="App">
@@ -71,7 +67,7 @@ const UserList = () => {
       <button className="add-user-btn" onClick={() => setShowAddUserModal(true)}>
         Add User
       </button>
-      <button className="add-user-btn" >
+      <button className="add-user-btn" onClick={()=>setManagepopup(true)}>
         Manage site
       </button>
       <div className="file-upload-container">
@@ -84,6 +80,7 @@ const UserList = () => {
       Search
     </button>
       </div>
+      {success && <p style={{ color: 'green' }}>{success}</p>}
       <table>
         <thead>
           <tr>
@@ -111,43 +108,13 @@ const UserList = () => {
         ))}
         </tbody>
       </table>
+      {
+        managepopup && (
+          <Messages setManagepopup={setManagepopup}/>
+        )
+      }
       {showAddUserModal && (
-        <div className="modal">
-          <div className="modal-content">
-            <span className="close" onClick={() => setShowAddUserModal(false)}>
-              &times;
-            </span>
-            <h2>Add User</h2>
-            <input
-              type="text"
-              placeholder="First Name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Last Name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <input
-              type="date"
-              value={birthDate}
-              onChange={(e) => setBirthDate(e.target.value)}
-            />
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-            <button onClick={addUser} className='submit'>Submit</button>
-          </div>
-        </div>
+        <SignUp setSucees={setSucees} setUsers={setUsers} users={users} setShowAddUserModal={setShowAddUserModal}/>
       )}
       <div className="pagination">
         {users.length > itemsPerPage &&

@@ -1,34 +1,32 @@
 import axios from "axios";
-import React,{ useState,useEffect }  from "react";
+import React,{ useState }  from "react";
 
-const SignUp=({setUsers,users,setShowAddUserModal})=>{
-  const [firstname, setFirstName] = useState('');
-  const [lastname, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [birth_day, setBirthDate] = useState('');
+const SignUp=({setSucees,setUsers,users,setShowAddUserModal})=>{
+  const [firstname, setFirstName] = useState([]);
+  const [lastname, setLastName] = useState([]);
+  const [email, setEmail] = useState([]);
+  const [birth_day, setBirthDate] = useState([]);
   const [status, setStatus] = useState('Active');
   const [error,setError]=useState('')
-  const [success,setSucees]=useState('')
- console.log(firstname,lastname,email,birth_day)
+
   const addUser = async() => {
     try{
-        // const newUser = {
-        //     firstname: firstname,
-        //     lastname: lastname,
-        //     email,
-        //     birth_date: birth_day,
-        //     status,
-        //   };
+      const newUser = {
+        firstname,
+        lastname,
+        email,
+        birth_day,
+        status,
+      };
      const response=await axios.post('http://localhost:4500/api/v1/users',{
         firstname,
         lastname,
         email,
         birth_day
      })
-     setSucees(response.data.message)
-  
-      // setUsers([...users, newUser]);
-      // setShowAddUserModal(false);
+       setSucees(response.data.message)
+      setUsers([...users, newUser]);
+      setShowAddUserModal(false);
       setFirstName('');
       setLastName('');
       setEmail('');
@@ -73,7 +71,6 @@ const SignUp=({setUsers,users,setShowAddUserModal})=>{
               <option value="Inactive">Inactive</option>
             </select>
             {error && <p style={{ color: 'red' }}>{error}</p>}
-            {success && <p style={{ color: 'white' }}>{success}</p>}
             <button onClick={addUser} className='submit'>Submit</button>
           </div>
         </div>
