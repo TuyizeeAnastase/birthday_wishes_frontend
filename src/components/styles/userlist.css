@@ -30,26 +30,6 @@
     font-weight: bold;
     color: white;
   }
-  .edit_btn{
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  .delete_btn{
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    background-color: #aa2222;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
   .modal {
     display: flex;
     justify-content: center;
@@ -116,39 +96,15 @@
   }
   
   .file-input {
-    width: 200px;
+    width: 400px;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #f9f9f9;
     color: #333;
     cursor: pointer;
-    /* margin-right: 10px; */
+    margin-right: 10px;
   }
-
-.search-input,
-.date-filter,
-.search-button {
-  margin-left: 10px;
-}
-
-.search-button {
-  width: 100px;
-  padding: 10px;
-  margin: 10px 0;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.search-input,
-.date-filter {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
   
   p {
     margin: 0;
@@ -171,4 +127,40 @@
   
   .pagination button:hover {
     background-color: #ddd;
+  }
+  .file-upload-container{
+    display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+  }
+  .date-filter{
+    width: 250px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    color: #333;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  .search-input{
+    width: 250px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    color: #333;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  .search-button{
+    height: 39px;
+    margin-top: 11px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    margin-right: 10px;
   }

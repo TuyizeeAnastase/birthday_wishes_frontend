@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import UserList from './components/usersList';
+import Login from './components/login/Login';
+import { BrowserRouter as Router, Route,Routes } from 'react-router-dom';
 
 
 function App() {
@@ -29,9 +31,14 @@ function App() {
   };
 
   return (
-    <div className="App">
-    <UserList/>
-  </div>
+    <div>
+    <Router>
+        <Routes>
+        <Route path="/" element={<Login/>} />
+        <Route path="/users" element={<UserList/>}/>
+        </Routes>
+    </Router>
+     </div>
   );
 }
 
