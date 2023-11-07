@@ -9,16 +9,16 @@ const SignUp=({setUsers,users,setShowAddUserModal})=>{
   const [status, setStatus] = useState('Active');
   const [error,setError]=useState('')
   const [success,setSucees]=useState('')
- 
+ console.log(firstname,lastname,email,birth_day)
   const addUser = async() => {
     try{
-        const newUser = {
-            firstname: firstname,
-            lastname: lastname,
-            email,
-            birth_date: birth_day,
-            status,
-          };
+        // const newUser = {
+        //     firstname: firstname,
+        //     lastname: lastname,
+        //     email,
+        //     birth_date: birth_day,
+        //     status,
+        //   };
      const response=await axios.post('http://localhost:4500/api/v1/users',{
         firstname,
         lastname,
@@ -27,8 +27,8 @@ const SignUp=({setUsers,users,setShowAddUserModal})=>{
      })
      setSucees(response.data.message)
   
-      setUsers([...users, newUser]);
-      setShowAddUserModal(false);
+      // setUsers([...users, newUser]);
+      // setShowAddUserModal(false);
       setFirstName('');
       setLastName('');
       setEmail('');

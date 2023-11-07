@@ -1,4 +1,4 @@
-import react,{useState} from 'react'
+import {useState} from 'react'
 import './login.css'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -13,11 +13,11 @@ const Login=()=>{
 
     const Login=async()=>{
         try{
-            const response = await axios.post('http://localhost:4500/api/v1/users/login', {
+            await axios.post('http://localhost:4500/api/v1/users/login', {
                 email: email,
                 password: password
             });    
-        navigate('/users');
+         navigate('/users');
         }catch(error){
             setError(error.response.data.message)
         }
