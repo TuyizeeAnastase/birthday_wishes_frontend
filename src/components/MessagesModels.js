@@ -9,22 +9,38 @@ const Messages=({setManagepopup})=>{
     const [text,setText]=useState([])
     const [error,setError]=useState('')
     const [isDisabled, setIsDisabled] = useState(true);
-    const [titleInput,setTitleInput]=useState([])
-    const [textInput,setTextInput]=useState([])
+    const [editedMessage, setEditedMessage] = useState(null);
+    const [editedTitle, setEditedTitle] = useState('');
+    const [editedText, setEditedText] = useState('');
+    const [success,setSucees]=useState([])
     
     const addMessage=async()=>{
         try{
             const newMessage={title,text}
-            const response = await axios.post('http://localhost:4500/api/v1/messages',newMessage) 
-            console.log(response)
-            setMessages(false)
+            await axios.post('http://localhost:4500/api/v1/messages',newMessage) 
+            // setMessage(false)
         }catch(error){
             setError(error.response.data.message)
         }
     }
+    
+    const handleEdit = (message) => {
+        setIsDisabled(false);
+        setEditedMessage({ ...message });
+    };
 
-    const handleUpdate=async()=>{
-      console.log(titleInput,textInput)
+
+    const updateMessage=async()=>{
+       try{
+        const updated = { editedTitle, editedText };
+        console.log(updated,editedMessage.id)
+        const response=await axios.patch(`http://localhost:4500/api/v1/messages/${editedMessage.id}`,updated)
+        setIsDisabled(true);
+        setSucees(response.data.message)
+       }
+       catch(err){
+        console.error('Error updating message:', err);
+       }
     }
 
     useEffect(()=>{
@@ -34,7 +50,8 @@ const Messages=({setManagepopup})=>{
         }).catch((error) => {
             console.error('Error fetching messages:', error);
           });
-    })
+    },[messages])
+    
     return (
         <div className="message-modal">
           <div className="message-modal-content">
@@ -53,14 +70,13 @@ const Messages=({setManagepopup})=>{
             )}
             {messages.map((message,index)=>(
                 <div key={message.id} className="messages_form">
-                <input disabled={isDisabled}  type="text" value={titleInput} onRateChange={(e)=>setTitleInput(e.target.value)}  placeholder={message.title} />
-                <input disabled={isDisabled} type="text" value={textInput} onChange={(e)=>setTextInput(e.target.value)}  placeholder={message.text}/>
-                {isDisabled && (
-                    <button onClick={()=>setIsDisabled(false)}>Edit</button>
-                )}
-                {!isDisabled && (
-                    <button>Update</button>
-                )}
+                <input disabled={isDisabled || editedMessage.id !== message.id}  type="text"  onChange={(e) => setEditedTitle({title: e.target.value })}  placeholder={message.title} />
+                <input disabled={isDisabled || editedMessage.id !== message.id} type="text"  onChange={(e) => setEditedText({ text: e.target.value })} placeholder={message.text}/>
+                {isDisabled ? (
+            <button onClick={() => handleEdit(message)}>Edit</button>
+          ) : (
+            <button onClick={updateMessage}>Update</button>
+          )}
             </div>
             ))}
             </div>
