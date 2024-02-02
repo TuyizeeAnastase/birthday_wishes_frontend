@@ -58,6 +58,14 @@ const UserList = () => {
     console.log('search')
   }
 
+  const handleDelete=async(id)=>{
+    try {
+      await axios.delete(`http://localhost:4500/api/v1/users/${id}`);
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
+  }
+
   console.log(managepopup)
 
   return (
@@ -102,7 +110,7 @@ const UserList = () => {
             <td>{user.is_active}</td>
             <td>
               <Button style={{color:'green',fontStyle:'bold',fontSize:'15px'}}>Edit</Button>
-              <Button style={{color:'red',fontStyle:'bold',fontSize:'15px'}}>Delete</Button>
+              <Button onClick={() => handleDelete(user.id)} style={{color:'red',fontStyle:'bold',fontSize:'15px'}}>Delete</Button>
             </td>
           </tr>
         ))}
